@@ -409,11 +409,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/nguyenmautuan/Documents/C#/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
+      "projectUniqueName": "/Users/nguyenmautuan/Documents/C#/DownloadAlbumsRnR/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
       "projectName": "DownloadRnR",
-      "projectPath": "/Users/nguyenmautuan/Documents/C#/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
+      "projectPath": "/Users/nguyenmautuan/Documents/C#/DownloadAlbumsRnR/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
       "packagesPath": "/Users/nguyenmautuan/.nuget/packages/",
-      "outputPath": "/Users/nguyenmautuan/Documents/C#/DownloadRnR/DownloadRnR/obj/",
+      "outputPath": "/Users/nguyenmautuan/Documents/C#/DownloadAlbumsRnR/DownloadRnR/DownloadRnR/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/nguyenmautuan/.nuget/NuGet/NuGet.Config"

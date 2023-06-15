@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "v5FwbH/8McHDavRK/SQxRhfR5H60SaPuqTtQ1vheiuQdYs3Pdg7nQE5DbJL+0yQEYe9HU37nvzwemGSeqk2GUA==",
+  "dgSpecHash": "nQDpfptJBRanzm+yuVVQcUGFw/bdfyuiMPMP3B+W4nLzjcL5pqRWwefHPu1osLSDSzCWszJW+3mTDdLS+J7dVA==",
   "success": true,
-  "projectFilePath": "/Users/nguyenmautuan/Documents/C#/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
+  "projectFilePath": "/Users/nguyenmautuan/Documents/C#/DownloadAlbumsRnR/DownloadRnR/DownloadRnR/DownloadRnR.csproj",
   "expectedPackageFiles": [
     "/Users/nguyenmautuan/.nuget/packages/htmlagilitypack/1.11.46/htmlagilitypack.1.11.46.nupkg.sha512",
     "/Users/nguyenmautuan/.nuget/packages/jsonconverter.abstractions/0.4.0/jsonconverter.abstractions.0.4.0.nupkg.sha512",

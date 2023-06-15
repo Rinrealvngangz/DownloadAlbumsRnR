@@ -1,43 +1,79 @@
-﻿using System.IO.Compression;
+﻿using System.ComponentModel;
+using System.IO.Compression;
 using HtmlAgilityPack;
 using RestSharp;
 
 DownloadRockAndRoll downloadRockAndRoll = new DownloadRockAndRoll();
-Console.WriteLine("Start search and download...");
-downloadRockAndRoll.SearchAndDownload("red hot chili peppers");
-Console.WriteLine("Finish");
+Console.WriteLine("Start search...");
+downloadRockAndRoll.SearchAndDownload("pink floyd");
 class DownloadRockAndRoll
 {
     private readonly string Url = "https://www.rockdownload.org/en/";
-    private readonly string SavePath = @"/Users/nguyenmautuan/Desktop/";
+    private readonly string SavePath = @"/Users/nguyenmautuan/Desktop/AlbumsRock";
     public void SearchAndDownload(string nameSongOrArtist)
     {
-        var linkSearch = SearchSongOrArtist(nameSongOrArtist);
+        var doc = SearchAlbumsOrArtist(nameSongOrArtist);
+        if (doc is null)
+        {
+          return;
+        }
+        var albums = CheckIsAlbums(doc);
+        if (albums is null)
+        {
+            return;
+        }
+        DownloadFileProvider(albums);
+        Console.WriteLine("Start download...");
+        DownloadMoreAlbums(albums);
+        Console.WriteLine("Start more download...");
+    }
+
+    private void DownloadMoreAlbums(HtmlNode albums)
+    {
+        bool isPageNavigation = CheckIsPageNavigate(albums);
+        if (isPageNavigation)
+        {
+            var urlMoreAlbums = GetUrlPageNavigations(albums);
+            Console.WriteLine("More download...");
+            foreach (var urlAlbum in urlMoreAlbums)
+            {
+                var doc = WebLoadByUrl(urlAlbum);
+                var moreAlbums = CheckIsAlbums(doc);
+                if (moreAlbums is null)
+                {
+                    return;
+                }
+                DownloadFileProvider(moreAlbums); 
+            }
+        }
+    }
+
+    private void DownloadFileProvider(HtmlNode albums)
+    {
+        var linkSearch = GetAlbums(albums);
         var linkFileProviders =  GetLinkFileProvider(linkSearch);
         ProcessDownload(linkFileProviders);
     }
-    private List<string> SearchSongOrArtist(string name)
+    private HtmlDocument WebLoadByUrl(string queryUrl)
     {
-        var urlDownloads = new List<string>();
-        string queryUrl = $"{Url}?s={name}";
         var web = new HtmlWeb();
         var doc = web.Load(queryUrl);
-        bool found = FoundSong(doc);
-        if (!found)
-        {
-            return urlDownloads;
-        }
+        return doc;
+    }
+
+    private HtmlNode? CheckIsAlbums(HtmlDocument doc)
+    {
         var htmlNodes = doc.DocumentNode.SelectNodes("//main/section/div[@class='container']/div[@class='content']/h2[@class='site-title']");
         var albums = htmlNodes?.Where(x => x.InnerText == "Albums").FirstOrDefault();
-        if (albums is null)
-        {
-            return urlDownloads;
-        }
+        return albums;
+    }
+    private void RetrievalAlbums(HtmlNode? albums, ref List<string?> urlDownloads)
+    {
         var gridCards = albums.SelectNodes("//div[@class='grid-cards']");
         var cardWithExtends = gridCards.Where(x => x.InnerHtml.Contains("card-with-extends")).ToList();
         if (cardWithExtends.Count == 0)
         {
-            return urlDownloads;
+            return;
         }
         var cardWithExtend = cardWithExtends[0];
         var cardExtends = cardWithExtend.SelectNodes("//div[@class='card-extends']");
@@ -56,7 +92,53 @@ class DownloadRockAndRoll
             }
             urlDownloads.Add(value);
         }
-        return urlDownloads;
+    }
+    private HtmlDocument? SearchAlbumsOrArtist(string name)
+    {
+        string queryUrl = $"{Url}?s={name}";
+        var doc = WebLoadByUrl(queryUrl); 
+        bool found = FoundAlbums(doc);
+        if (!found)
+        {
+            return null;
+        }
+        return doc;
+    }
+
+    private List<string> GetAlbums(HtmlNode? albums)
+    {
+        var urlDownloads = new List<string>();
+        if (albums is not null)
+        {
+            RetrievalAlbums(albums, ref urlDownloads);       
+        }
+        return urlDownloads; 
+    }
+    
+    private bool CheckIsPageNavigate(HtmlNode htmlNode)
+    {
+        var pageNavi = htmlNode.SelectNodes("//div[@class='wp-pagenavi']");
+        if (pageNavi is null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private List<string> GetUrlPageNavigations(HtmlNode htmlNode)
+    {
+        List<string> hrefs = new List<string>();
+        var pageNavis = htmlNode.SelectNodes("//div[@class='wp-pagenavi']/a[@class='page larger']");
+        if (pageNavis is null)
+        {
+            return hrefs;
+        }
+        foreach (var page in pageNavis)
+        {
+           var href = page.GetAttributeValue("href","");
+           hrefs.Add(href);
+        }
+        return hrefs;
     }
 
     private List<(string,string)> GetLinkFileProvider(List<string> urlDownloads)
@@ -105,7 +187,6 @@ class DownloadRockAndRoll
             {
                 Download(url, value);
             });
-            thread.IsBackground = true;
             thread.Start();
         }
     }
@@ -156,9 +237,9 @@ class DownloadRockAndRoll
         var zipPath = Path.Combine(SavePath, nameFile);
         File.WriteAllBytes(zipPath, data);
         ZipFile.ExtractToDirectory(zipPath,SavePath);
-        File.Delete(zipPath); 
+        File.Delete(zipPath);
     }
-    private bool FoundSong(HtmlDocument doc)
+    private bool FoundAlbums(HtmlDocument doc)
     {
         var htmlNodes = doc.DocumentNode.SelectNodes("//main/section/div[@class='container']/div[@class='content']");
         if (htmlNodes is null)
