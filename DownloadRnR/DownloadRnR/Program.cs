@@ -5,12 +5,7 @@ using RestSharp;
 
 DownloadRockAndRoll downloadRockAndRoll = new DownloadRockAndRoll();
 
-
-Console.WriteLine("Start search...3..2..1");
 Console.WriteLine("Start search...");
-
-Console.WriteLine("Start search...1..2..3..");
-
 downloadRockAndRoll.SearchAndDownload("nirvana");
 
 class DownloadRockAndRoll
